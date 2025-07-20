@@ -9,6 +9,8 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.OpenApi.Models;
+
 
 namespace JOIEnergy
 {
@@ -53,6 +55,16 @@ namespace JOIEnergy
             };
 
             services.AddMvc(options => options.EnableEndpointRouting = false);
+
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Title = "JOIEnergy API",
+                    Version = "v1"
+                });
+            });
+
             services.AddTransient<IAccountService, AccountService>();
             services.AddTransient<IMeterReadingService, MeterReadingService>();
             services.AddTransient<IPricePlanService, PricePlanService>();
@@ -68,6 +80,13 @@ namespace JOIEnergy
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            app.UseSwagger(); 
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "JOIEnergy API V1");
+                c.RoutePrefix = string.Empty;
+            });
 
             app.UseMvc();
         }
